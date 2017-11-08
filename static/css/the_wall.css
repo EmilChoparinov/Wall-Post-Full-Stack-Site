@@ -1,0 +1,89 @@
+/* 
+border: 1px solid #ccc;
+background-color: #f3f3f3;
+*/
+*{
+    padding: 0px;
+    margin: 0px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+#banner_cont{
+    background-color: #f3f3f3;
+    border-bottom: solid black .25vw;
+}h1{
+    font-size: 2vw;
+    padding-left: .5vw;
+    padding-top: 1vh; 
+    padding-bottom: 1vw;
+    display: inline-block;
+}
+#welcome_name{
+    padding-top:2.5vh; 
+    padding-bottom:2.5vw; 
+    font-size: 1vw;
+    margin-right: 2vw; 
+    display: inline-block;
+    float: right;
+}
+a{
+    padding-top:2.5vh; 
+    padding-bottom:2.5vw; 
+    margin-right: 1vw;
+    font-size: 1vw;
+    display: inline-block;
+    float: right;
+}
+#container{
+    width: 82.5vw;
+    margin: 0 auto;
+}
+#post{
+    background-color: #f3f3f3;    
+    padding-left: .1vw;
+    padding-top: .1vh; 
+    margin-top: .5vh; 
+    margin-left: 1vw;
+    width: 97.9%;
+    height: 20vh;
+    border: solid black .1vw;
+}
+.posts{
+    margin-top: .2vh;
+}
+.one_post{
+    margin-top: .75vh;
+    width: 98%;
+    margin-left: 1%;
+}
+.comments{
+    margin-top: .2vh;
+    width: 94%;
+    margin-left: 5%; 
+}
+.one_comment{
+    margin-top: .75vh;
+    width: 98%;
+    margin-left: 1%; 
+}
+h2{
+    margin-left: .1vw;
+}
+#comment_text{
+    background-color: #f3f3f3;    
+    padding-left: .1vw;
+    padding-top: .1vh; 
+    margin-top: .5vh; 
+    margin-left: .85vw;
+    width: 97.9%;
+    height: 20vh;
+    border: solid black .1vw;
+}
+.post_a_comment{
+    margin-left: .85vw;
+}
+h3{
+    display: block;
+}
+.post_wrap{
+    margin-top: .5vh;
+}
