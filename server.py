@@ -109,8 +109,6 @@ def registerValid(data):
 # TO WALL
 @server.route('/the_wall')
 def the_wall():
-    query = "SELECT messages.id AS message_id, messages.message, messages.created_at, messages.updated_at, messages.users_id, users.first_name, users.last_name, users.email, comments.comment, comments.users_id AS comment_from_user_id, comments.updated_at AS comment_updated_at FROM users JOIN messages ON messages.users_id = users.id LEFT JOIN comments ON comments.messages_id = messages.id"
-
     get_messages_query = "SELECT messages.id AS message_id, messages.users_id, messages.message, messages.updated_at, users.first_name, users.last_name FROM messages JOIN users ON messages.users_id = users.id ORDER BY message_id DESC"
 
     get_comments_query = "SELECT comments.messages_id AS comments_message_id, comments.id AS comments_id, comments.comment, comments.updated_at, users.id AS users_id, users.first_name, users.last_name FROM comments JOIN users ON users.id = comments.users_id ORDER BY comments_message_id DESC"
@@ -141,7 +139,6 @@ def the_wall():
         for i in bigObj:
             if bigObj[i]['comments']:
                 print bigObj[i]['comments'][0]['message_id']
-#<input type="hidden" name="message_id" value="{{posts_[i]['comments'][0]['message_id']}}">
     return render_template('the_wall.html', name=session['first_name'], posts_=bigObj)
 
 # LOGS OFF USER
