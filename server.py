@@ -1,15 +1,20 @@
 from flask import Flask, render_template, session, redirect, flash, request
 from mysqlconnection import MySQLConnector
-import os, binascii, md5, re
+import os
+import binascii
+import md5
+import re
 
 server = Flask(__name__)
 mysql = MySQLConnector(server, 'the_wall')
 server.secret_key = "a secret key"
 
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
-NAME_REGEX =re.compile(r'^[a-zA-Z]+$')
+NAME_REGEX = re.compile(r'^[a-zA-Z]+$')
 
 # MAIN ROUTE
+
+
 @server.route('/')
 def index():
     if 'first_name' in session:
@@ -27,6 +32,8 @@ def login():
     return render_template('login.html')
 
 # TO PROCESS LOGIN
+
+
 @server.route('/login_process', methods=['POST'])
 def login_process():
     query = "SELECT * FROM users WHERE users.email = :email LIMIT 1"
@@ -40,9 +47,12 @@ def login_process():
     return redirect('/login')
 
 # TO CHECK LOGIN IS CORRECT
+
+
 def loginValid(querySet, passwordAttempt):
     if len(querySet) != 0:
-        hsh_passwordAttempt = md5.new(passwordAttempt + querySet[0]['salt']).hexdigest()
+        hsh_passwordAttempt = md5.new(
+            passwordAttempt + querySet[0]['salt']).hexdigest()
         if querySet[0]['password'] == hsh_passwordAttempt:
             return True
         else:
@@ -58,6 +68,8 @@ def register():
     return render_template('register.html')
 
 # TO PROCESS REGISTER
+
+
 @server.route('/register_process', methods=['POST'])
 def register_process():
     if registerValid(request):
@@ -78,6 +90,8 @@ def register_process():
     return redirect('/register')
 
 # TO CHECK REGISTER IS CORRECT
+
+
 def registerValid(data):
     print data
     valid = True
@@ -107,10 +121,11 @@ def registerValid(data):
     return valid
 
 # TO WALL
+
+
 @server.route('/the_wall')
 def the_wall():
     get_messages_query = "SELECT messages.id AS message_id, messages.users_id, messages.message, messages.updated_at, users.first_name, users.last_name FROM messages JOIN users ON messages.users_id = users.id ORDER BY message_id DESC"
-
     get_comments_query = "SELECT comments.messages_id AS comments_message_id, comments.id AS comments_id, comments.comment, comments.updated_at, users.id AS users_id, users.first_name, users.last_name FROM comments JOIN users ON users.id = comments.users_id ORDER BY comments_message_id DESC"
 
     get_messages = mysql.query_db(get_messages_query)
@@ -119,9 +134,9 @@ def the_wall():
     bigObj = {}
     for mRow in get_messages:
         bigObj[mRow['message_id']] = {
-            'id' : mRow['message_id'],
+            'id': mRow['message_id'],
             'comments': []
-            }
+        }
         bigObj[mRow['message_id']]['first_name'] = mRow['first_name']
         bigObj[mRow['message_id']]['last_name'] = mRow['last_name']
         bigObj[mRow['message_id']]['message'] = mRow['message']
@@ -135,19 +150,23 @@ def the_wall():
                     'last_name': cRow['last_name'],
                     'message_id': cRow['comments_message_id']
                 })
+            if bigObj[mRow['message_id']]['id'] > cRow['comments_message_id']:
+                break
 
-        for i in bigObj:
-            if bigObj[i]['comments']:
-                print bigObj[i]['comments'][0]['message_id']
+        print bigObj
     return render_template('the_wall.html', name=session['first_name'], posts_=bigObj)
 
 # LOGS OFF USER
+
+
 @server.route('/logoff')
 def logoff():
     session.pop('id', None)
     return redirect('/')
 
 # TO PROCESS A POST
+
+
 @server.route('/process_post_post', methods=['POST'])
 def process_post_post():
     query = "INSERT INTO messages (messages.message, messages.created_at, messages.updated_at, messages.users_id) VALUES (:message, NOW(), NOW(), :user_id)"
@@ -159,9 +178,10 @@ def process_post_post():
     return redirect('/')
 
 # TO PROCESS A COMMENT
+
+
 @server.route('/process_post_comment', methods=['POST'])
 def process_post_comment():
-    # print request.form['poster_id']
     query = "INSERT INTO comments (comments.comment, comments.created_at, comments.updated_at, comments.messages_id, comments.users_id) VALUES (:comment, NOW(), NOW(), :messages_id, :users_id)"
 
     print request.form['comment_text']
@@ -173,4 +193,6 @@ def process_post_comment():
     }
     mysql.query_db(query, data=data)
     return redirect('/')
+
+
 server.run(debug=True)
