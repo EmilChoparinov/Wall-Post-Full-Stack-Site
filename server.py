@@ -111,8 +111,38 @@ def registerValid(data):
 def the_wall():
     query = "SELECT messages.id AS message_id, messages.message, messages.created_at, messages.updated_at, messages.users_id, users.first_name, users.last_name, users.email, comments.comment, comments.users_id AS comment_from_user_id, comments.updated_at AS comment_updated_at FROM users JOIN messages ON messages.users_id = users.id LEFT JOIN comments ON comments.messages_id = messages.id"
 
-    postQuerySet = mysql.query_db(query)
-    return render_template('the_wall.html', name=session['first_name'], postQuerySet=postQuerySet)
+    get_messages_query = "SELECT messages.id AS message_id, messages.users_id, messages.message, messages.updated_at, users.first_name, users.last_name FROM messages JOIN users ON messages.users_id = users.id ORDER BY message_id DESC"
+
+    get_comments_query = "SELECT comments.messages_id AS comments_message_id, comments.id AS comments_id, comments.comment, comments.updated_at, users.id AS users_id, users.first_name, users.last_name FROM comments JOIN users ON users.id = comments.users_id ORDER BY comments_message_id DESC"
+
+    get_messages = mysql.query_db(get_messages_query)
+    get_comments = mysql.query_db(get_comments_query)
+
+    bigObj = {}
+    for mRow in get_messages:
+        bigObj[mRow['message_id']] = {
+            'id' : mRow['message_id'],
+            'comments': []
+            }
+        bigObj[mRow['message_id']]['first_name'] = mRow['first_name']
+        bigObj[mRow['message_id']]['last_name'] = mRow['last_name']
+        bigObj[mRow['message_id']]['message'] = mRow['message']
+        bigObj[mRow['message_id']]['updated_at'] = mRow['updated_at']
+        for cRow in get_comments:
+            if bigObj[mRow['message_id']]['id'] == cRow['comments_message_id']:
+                bigObj[mRow['message_id']]['comments'].append({
+                    'comment': cRow['comment'],
+                    'updated_at': cRow['updated_at'],
+                    'first_name': cRow['first_name'],
+                    'last_name': cRow['last_name'],
+                    'message_id': cRow['comments_message_id']
+                })
+
+        for i in bigObj:
+            if bigObj[i]['comments']:
+                print bigObj[i]['comments'][0]['message_id']
+#<input type="hidden" name="message_id" value="{{posts_[i]['comments'][0]['message_id']}}">
+    return render_template('the_wall.html', name=session['first_name'], posts_=bigObj)
 
 # LOGS OFF USER
 @server.route('/logoff')
@@ -144,7 +174,6 @@ def process_post_comment():
         "users_id": session['id']
 
     }
-    print request.form['comment_text'], request.form['message_id'], session['id']
     mysql.query_db(query, data=data)
     return redirect('/')
 server.run(debug=True)

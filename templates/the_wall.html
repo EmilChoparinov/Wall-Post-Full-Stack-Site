@@ -21,22 +21,24 @@
             <textarea name="post" id="post"></textarea>
         </form>
         <div class="posts">
-                {% for post in range(0, postQuerySet.__len__) %}
-                <div class="post_wrap">
-                    <h3>{{post['first_name']}} {{post['last_name']}} - {{post['updated_at']}}</h3>
-                    <p class="one_post">{{post['message']}}</p>
-                    <div class="comments">
-                        <h3>Name Here</h3>
-                        <p class="one_comment">Excepturi occaecati dolorem rerum omnis. Et quibusdam et dolores rerum. Harum iure aut provident dolores labore ad sunt facilis.Nam molestiae mollitia commodi nemo ipsum debitis alias et quaerat. Est et sit ullam eum quis. Ipsam ut animi velit dolorem sit. Dicta est ab porro consequatur molestias rerum sequi et minus. Laboriosam eligendi facilis aut cum unde. Commodi est adipisci sed ipsum reiciendis error eum perferendis molestias. Numquam facilis facilis soluta omnis voluptatum sint sunt cum quaerat. Ratione vel eos non voluptate facilis iusto qui. Voluptates deleniti nesciunt facilis provident. Ipsa eius maxime veritatis sint. Sit officiis ullam ea ad repellat doloremque libero voluptatem ea. Voluptatibus ipsam in expedita fugiat.</p>
-                        <h3 class="post_a_comment">Post a comment</h3>
-                        <form action="/process_post_comment" method="post" class="process_post_comment">
-                            <input type="hidden" name="message_id" value="{{post['message_id']}}">
-                            <textarea name="comment_text" class="comment_text"></textarea>
-                        </form>
-                    </div>
+            {%for i in posts_%}
+            <div class="post_wrap">
+                <h3>{{posts_[i]['first_name']}} {{posts_[i]['last_name']}} - {{posts_[i]['updated_at']}}</h3>
+                <p class="one_post">{{posts_[i]['message']}}</p>
+                <div class="comments">
+                    {%for j in range(0,posts_[i]['comments'].__len__()):%}
+                    <h3>{{posts_[i]['comments'][j]['first_name']}} {{posts_[i]['comments'][j]['last_name']}} - {{posts_[i]['comments'][j]['updated_at']}}</h3>
+                    <p class="one_comment">{{posts_[i]['comments'][j]['comment']}}</p>
+                    {% endfor %}
+                    <h3 class="post_a_comment">Post a comment</h3>                    
+                    <form action="/process_post_comment" method="post" class="process_post_comment">
+                        <input type="hidden" name="message_id" value="{{posts_[i]['id']}}">
+                        <textarea name="comment_text" class="comment_text"></textarea>
+                    </form>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
+        </div>
     </div>
 </body>
 
