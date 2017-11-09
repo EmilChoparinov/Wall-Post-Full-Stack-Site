@@ -4,9 +4,10 @@ $(document).ready(function(){
             $('#process_post_post').submit();
         }
     });
-    $('#comment_text').keydown(function(e){
+    $('form').keydown(function(e){
+        console.log('key pressed')
         if(e.which == 13){
-            $('#process_post_comment').submit();
+            $(this).submit();
         }
     });
 });

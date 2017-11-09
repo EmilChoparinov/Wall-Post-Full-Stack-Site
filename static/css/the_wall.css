@@ -68,7 +68,7 @@ a{
 h2{
     margin-left: .1vw;
 }
-#comment_text{
+.comment_text{
     background-color: #f3f3f3;    
     padding-left: .1vw;
     padding-top: .1vh; 

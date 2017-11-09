@@ -34,6 +34,7 @@ def login_process():
     print querySet
     if loginValid(querySet, request.form['password']):
         session['id'] = querySet[0]['id']
+        session['first_name'] = querySet[0]['first_name']
         print querySet[0]['id']
         return redirect('/the_wall')
     return redirect('/login')
@@ -108,7 +109,8 @@ def registerValid(data):
 # TO WALL
 @server.route('/the_wall')
 def the_wall():
-    query = "SELECT * FROM messages JOIN users ON messages.users_id = users.id;"
+    query = "SELECT messages.id AS message_id, messages.message, messages.created_at, messages.updated_at, messages.users_id, users.first_name, users.last_name, users.email, comments.comment, comments.users_id AS comment_from_user_id, comments.updated_at AS comment_updated_at FROM users JOIN messages ON messages.users_id = users.id LEFT JOIN comments ON comments.messages_id = messages.id"
+
     postQuerySet = mysql.query_db(query)
     return render_template('the_wall.html', name=session['first_name'], postQuerySet=postQuerySet)
 
@@ -118,6 +120,7 @@ def logoff():
     session.pop('id', None)
     return redirect('/')
 
+# TO PROCESS A POST
 @server.route('/process_post_post', methods=['POST'])
 def process_post_post():
     query = "INSERT INTO messages (messages.message, messages.created_at, messages.updated_at, messages.users_id) VALUES (:message, NOW(), NOW(), :user_id)"
@@ -125,6 +128,23 @@ def process_post_post():
         'message': request.form['post'],
         'user_id': session['id']
     }
+    mysql.query_db(query, data=data)
+    return redirect('/')
+
+# TO PROCESS A COMMENT
+@server.route('/process_post_comment', methods=['POST'])
+def process_post_comment():
+    # print request.form['poster_id']
+    query = "INSERT INTO comments (comments.comment, comments.created_at, comments.updated_at, comments.messages_id, comments.users_id) VALUES (:comment, NOW(), NOW(), :messages_id, :users_id)"
+
+    print request.form['comment_text']
+    data = {
+        "comment": request.form['comment_text'],
+        "messages_id": request.form['message_id'],
+        "users_id": session['id']
+
+    }
+    print request.form['comment_text'], request.form['message_id'], session['id']
     mysql.query_db(query, data=data)
     return redirect('/')
 server.run(debug=True)
